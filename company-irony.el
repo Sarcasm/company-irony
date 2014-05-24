@@ -39,19 +39,13 @@
 
 (require 'cl-lib)
 
-(defsubst company-irony--annotation (candidate)
-  (let ((props (get-text-property 0 'company-irony candidate)))
-    (substring (nth 3 props) (nth 4 props))))
-
-(defsubst company-irony--meta (candidate)
-  (let ((props (get-text-property 0 'company-irony candidate)))
-    (nth 2 props)))
+(defsubst company-irony--irony-candidate (candidate)
+  (get-text-property 0 'company-irony candidate))
 
 (defun company-irony--make-all-completions (prefix candidates)
   (cl-loop for candidate in candidates
            when (string-prefix-p prefix (car candidate))
-           collect (propertize (car candidate)
-                               'company-irony (cdr candidate))))
+           collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony-candidates-async (prefix callback)
   (funcall callback (company-irony--make-all-completions
@@ -71,10 +65,17 @@
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-irony))
-    (prefix (company-grab-symbol))
+    (prefix (and irony-completion-mode
+                 ;;TODO: provide this via irony-completion
+                 (not (company-in-string-or-comment))
+                 (company-grab-symbol)))
     (candidates (company-irony-candidates arg))
-    (annotation (company-irony--annotation arg))
-    (meta (company-irony--meta arg))
+    (annotation (irony-completion-annotation
+                 (company-irony--irony-candidate arg)))
+    (meta (irony-completion-brief
+           (company-irony--irony-candidate arg)))
+    (post-completion (irony-completion-post-complete
+                      (company-irony--irony-candidate arg)))
     (sorted t)))
 
 (provide 'company-irony)
