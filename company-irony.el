@@ -49,16 +49,24 @@
 
 (defun company-irony-candidates-async (prefix callback)
   (funcall callback (company-irony--make-all-completions
-                     prefix (irony-completion-candidates-at-point))))
+                     prefix (irony-completion-candidates))))
 
 (defun company-irony-candidates (prefix)
-  (irony--aif (irony-completion-candidates-at-point)
-      (company-irony--make-all-completions prefix it)
+  (if (irony-completion-candidates-available-p)
+      (company-irony--make-all-completions prefix
+                                           (irony-completion-candidates))
     (cons :async
           (lambda (callback)
-            (irony-completion-candidates-at-point-async
+            (irony-completion-candidates-async
              (lambda () ;; closure
                (company-irony-candidates-async prefix callback)))))))
+
+(defun irony-company-post-completion (candidate)
+  ;; This check is necessary because Company triggers a 'post-completion even if
+  ;; the candidate has just been typed without relying on the completion, but it
+  ;; doesn't provide the full candidate information.
+  (when candidate
+    (irony-completion-post-complete candidate)))
 
 ;;;###autoload
 (defun company-irony (command &optional arg &rest ignored)
@@ -74,7 +82,7 @@
                  (company-irony--irony-candidate arg)))
     (meta (irony-completion-brief
            (company-irony--irony-candidate arg)))
-    (post-completion (irony-completion-post-complete
+    (post-completion (irony-company-post-completion
                       (company-irony--irony-candidate arg)))
     (sorted t)))
 
