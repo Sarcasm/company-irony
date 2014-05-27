@@ -68,15 +68,18 @@
   (when candidate
     (irony-completion-post-complete candidate)))
 
+(defun company-irony-prefix ()
+  (let ((symbol-start (irony-completion-beginning-of-symbol)))
+    (when symbol-start
+      (buffer-substring-no-properties symbol-start (point)))))
+
 ;;;###autoload
 (defun company-irony (command &optional arg &rest ignored)
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-irony))
     (prefix (and irony-completion-mode
-                 ;;TODO: provide this via irony-completion
-                 (not (company-in-string-or-comment))
-                 (company-grab-symbol)))
+                 (company-irony-prefix)))
     (candidates (company-irony-candidates arg))
     (annotation (irony-completion-annotation
                  (company-irony--irony-candidate arg)))
