@@ -70,8 +70,9 @@
 
 (defun company-irony-prefix ()
   (let ((symbol-start (irony-completion-beginning-of-symbol)))
-    (when symbol-start
-      (buffer-substring-no-properties symbol-start (point)))))
+    (if symbol-start
+        (buffer-substring-no-properties symbol-start (point))
+      'stop)))
 
 ;;;###autoload
 (defun company-irony (command &optional arg &rest ignored)
