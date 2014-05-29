@@ -71,7 +71,10 @@
 (defun company-irony-prefix ()
   (let ((symbol-start (irony-completion-beginning-of-symbol)))
     (if symbol-start
-        (buffer-substring-no-properties symbol-start (point))
+        (let ((prefix (buffer-substring-no-properties symbol-start (point))))
+          (if (irony-completion-at-trigger-point-p)
+              (cons prefix t)
+            prefix))
       'stop)))
 
 ;;;###autoload
