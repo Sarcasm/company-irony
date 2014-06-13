@@ -24,12 +24,11 @@
 
 ;;; Commentary:
 
-;; Add `company-irony' to `company-backends':
+;; Usage:
 ;;
-;;     (add-to-list 'company-backends 'company-irony)
-;;
-;; Be careful of conflict with the irony-mode completion at point integration if
-;; `company-capf' is used at the same time.
+;;     (eval-after-load 'company
+;;       '(add-to-list 'company-backends 'company-irony))
+;;     (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 
 ;;; Code:
 
@@ -38,6 +37,11 @@
 (require 'company)
 
 (require 'cl-lib)
+
+(defgroup company-irony nil
+  "Company-mode completion back-end for Irony."
+  :group 'company
+  :group 'irony)
 
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
@@ -92,6 +96,20 @@
     (post-completion (irony-company-post-completion
                       (company-irony--irony-candidate arg)))
     (sorted t)))
+
+;;;###autoload
+(defun company-irony-setup-begin-commands ()
+  "Include irony trigger commands to `company-begin-commands'.
+
+This allow completion to be automatically triggered after member
+accesses (obj.|, obj->|, ...)."
+  (if (listp company-begin-commands)
+      (set (make-local-variable 'company-begin-commands)
+           (delete-dups
+            (append company-begin-commands irony-completion-trigger-commands)))
+    (display-warning 'company-irony
+                     "`company-irony-setup-begin-commands' expects \
+`company-begin-commands' to be a list!")))
 
 (provide 'company-irony)
 ;;; company-irony.el ends here
