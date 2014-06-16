@@ -6,8 +6,7 @@
 ;; Keywords: convenience
 ;; Version: 0.1.0
 ;; URL: https://github.com/Sarcasm/company-irony/
-;; Compatibility: GNU Emacs 24.1 and above.
-;; Package-Requires: ((company "0.8.0") (irony "0.1.0") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "24.1") (company "0.8.0") (irony "0.1.0") (cl-lib "0.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -62,7 +61,7 @@
     (cons :async
           (lambda (callback)
             (irony-completion-candidates-async
-             (lambda () ;; closure
+             (lambda () ;; closure, lexically bound
                (company-irony-candidates-async prefix callback)))))))
 
 (defun irony-company-post-completion (candidate)
