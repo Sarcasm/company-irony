@@ -69,7 +69,20 @@
   ;; the candidate has just been typed without relying on the completion, but it
   ;; doesn't provide the full candidate information.
   (when candidate
-    (irony-completion-post-complete candidate)))
+    (irony-completion-post-complete candidate)
+    ;; Here we set this-command to a `self-insert-command' so that company may
+    ;; retrigger idle completion after the snippet expansion
+    ;; (~`company-post-command'). This is a bit of a hack and maybe that will
+    ;; change in the future. This is useful for example when the completed
+    ;; candidate is a namespace and the annotation text (inserted snippet) is
+    ;; the scope operator.
+    ;;
+    ;; std| -> std::   (=> idle completion desired here)
+    ;;         stderr
+    ;;         ...
+    ;;
+    ;; See https://github.com/company-mode/company-mode/issues/143
+    (setq this-command 'self-insert-command)))
 
 (defun company-irony-prefix ()
   (let ((symbol-start (irony-completion-beginning-of-symbol)))
