@@ -45,16 +45,27 @@
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
 
+(defun company-irony-prefix ()
+  (let ((symbol-start (irony-completion-beginning-of-symbol)))
+    (if symbol-start
+        (let ((prefix (buffer-substring-no-properties symbol-start (point))))
+          (save-excursion
+            (goto-char symbol-start)
+            (if (irony-completion-at-trigger-point-p)
+                (cons prefix t)
+              prefix)))
+      'stop)))
+
 (defun company-irony--make-all-completions (prefix candidates)
   (cl-loop for candidate in candidates
            when (string-prefix-p prefix (car candidate))
            collect (propertize (car candidate) 'company-irony candidate)))
 
-(defun company-irony-candidates-async (prefix callback)
+(defun company-irony--candidates-async (prefix callback)
   (funcall callback (company-irony--make-all-completions
                      prefix (irony-completion-candidates))))
 
-(defun company-irony-candidates (prefix)
+(defun company-irony--candidates (prefix)
   (if (irony-completion-candidates-available-p)
       (company-irony--make-all-completions prefix
                                            (irony-completion-candidates))
@@ -62,9 +73,12 @@
           (lambda (callback)
             (irony-completion-candidates-async
              (lambda () ;; closure, lexically bound
-               (company-irony-candidates-async prefix callback)))))))
+               (company-irony--candidates-async prefix callback)))))))
 
-(defun irony-company-post-completion (candidate)
+(defun company-irony--annotation (candidate)
+  (irony-completion-annotation candidate))
+
+(defun company-irony--post-completion (candidate)
   ;; This check is necessary because Company triggers a 'post-completion even if
   ;; the candidate has just been typed without relying on the completion, but it
   ;; doesn't provide the full candidate information.
@@ -86,17 +100,6 @@
       (unless (eq (point) point-before-post-complete)
         (setq this-command 'self-insert-command)))))
 
-(defun company-irony-prefix ()
-  (let ((symbol-start (irony-completion-beginning-of-symbol)))
-    (if symbol-start
-        (let ((prefix (buffer-substring-no-properties symbol-start (point))))
-          (save-excursion
-            (goto-char symbol-start)
-            (if (irony-completion-at-trigger-point-p)
-                (cons prefix t)
-              prefix)))
-      'stop)))
-
 ;;;###autoload
 (defun company-irony (command &optional arg &rest ignored)
   (interactive (list 'interactive))
@@ -104,12 +107,12 @@
     (interactive (company-begin-backend 'company-irony))
     (prefix (and irony-completion-mode
                  (company-irony-prefix)))
-    (candidates (company-irony-candidates arg))
-    (annotation (irony-completion-annotation
+    (candidates (company-irony--candidates arg))
+    (annotation (company-irony--annotation
                  (company-irony--irony-candidate arg)))
     (meta (irony-completion-brief
            (company-irony--irony-candidate arg)))
-    (post-completion (irony-company-post-completion
+    (post-completion (company-irony--post-completion
                       (company-irony--irony-candidate arg)))
     (sorted t)))
 
