@@ -76,7 +76,11 @@
                (company-irony--candidates-async prefix callback)))))))
 
 (defun company-irony--annotation (candidate)
-  (irony-completion-annotation candidate))
+  (concat
+   (irony-completion-annotation candidate)
+   (let ((type (irony-completion-type candidate)))
+     (when (not (zerop (length type)))
+       (concat " -> " type)))))
 
 (defun company-irony--post-completion (candidate)
   ;; This check is necessary because Company triggers a 'post-completion even if
