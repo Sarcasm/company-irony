@@ -55,19 +55,19 @@
               prefix)))
       'stop)))
 
-(defun company-irony--make-all-completions (prefix candidates)
+(defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
            when (string-prefix-p prefix (car candidate))
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates-async (prefix callback)
-  (funcall callback (company-irony--make-all-completions
-                     prefix (irony-completion-candidates))))
+  (funcall callback
+           (company-irony--filter-candidates prefix
+                                             (irony-completion-candidates))))
 
 (defun company-irony--candidates (prefix)
   (if (irony-completion-candidates-available-p)
-      (company-irony--make-all-completions prefix
-                                           (irony-completion-candidates))
+      (company-irony--filter-candidates prefix (irony-completion-candidates))
     (cons :async
           (lambda (callback)
             (irony-completion-candidates-async
