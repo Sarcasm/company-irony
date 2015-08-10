@@ -27,7 +27,6 @@
 ;;
 ;;     (eval-after-load 'company
 ;;       '(add-to-list 'company-backends 'company-irony))
-;;     (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
 
 ;;; Code:
 
@@ -125,7 +124,10 @@
   "Include irony trigger commands to `company-begin-commands'.
 
 This allow completion to be automatically triggered after member
-accesses (obj.|, obj->|, ...)."
+accesses (obj.|, obj->|, ...).
+
+This may be useful to company < `0.8.4', newer version of company
+include these commands by default."
   (if (listp company-begin-commands)
       (set (make-local-variable 'company-begin-commands)
            (delete-dups
