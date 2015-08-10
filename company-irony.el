@@ -108,8 +108,7 @@
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-irony))
-    (prefix (and irony-completion-mode
-                 (company-irony-prefix)))
+    (prefix (and irony-mode (company-irony-prefix)))
     (candidates (company-irony--candidates arg))
     (annotation (company-irony--annotation
                  (company-irony--irony-candidate arg)))
