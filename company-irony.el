@@ -116,6 +116,7 @@
            (company-irony--irony-candidate arg)))
     (post-completion (company-irony--post-completion
                       (company-irony--irony-candidate arg)))
+    (ignore-case t)
     (sorted t)))
 
 ;;;###autoload
