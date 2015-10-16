@@ -57,7 +57,7 @@
 
 (defun company-irony--make-all-completions (prefix candidates)
   (cl-loop for candidate in candidates
-           when (string-prefix-p prefix (car candidate))
+           when (string-prefix-p prefix (car candidate) t)
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates-async (prefix callback)
