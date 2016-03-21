@@ -4,7 +4,7 @@
 
 ;; Author: Guillaume Papin <guillaume.papin@epitech.eu>
 ;; Keywords: convenience
-;; Version: 0.1.1
+;; Version: 0.1.2-cvs
 ;; URL: https://github.com/Sarcasm/company-irony/
 ;; Package-Requires: ((emacs "24.1") (company "0.8.0") (irony "0.2.0") (cl-lib "0.5"))
 
@@ -87,7 +87,11 @@
   ;; doesn't provide the full candidate information.
   (when candidate
     (let ((point-before-post-complete (point)))
-      (irony-completion-post-complete candidate)
+      (if (irony-snippet-available-p)
+          (irony-completion-post-complete candidate)
+        (let ((str (irony-completion-post-comp-str candidate)))
+          (insert str)
+          (company-template-c-like-templatify str)))
       ;; Here we set this-command to a `self-insert-command' so that company may
       ;; retrigger idle completion after the snippet expansion
       ;; (~`company-post-command'). This is a bit of a hack and maybe that will
