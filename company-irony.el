@@ -57,7 +57,7 @@
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
-           when (string-prefix-p prefix (car candidate))
+           when (string-prefix-p prefix (car candidate) t)
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates-async (prefix callback)
@@ -120,6 +120,7 @@
            (company-irony--irony-candidate arg)))
     (post-completion (company-irony--post-completion
                       (company-irony--irony-candidate arg)))
+    (ignore-case t)
     (sorted t)))
 
 ;;;###autoload
