@@ -41,6 +41,10 @@
   :group 'company
   :group 'irony)
 
+(defcustom company-irony-ignore-case nil
+  "Non-nil to ignore case when collecting completion candidates."
+  :type 'boolean)
+
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
 
@@ -57,7 +61,8 @@
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
-           when (string-prefix-p prefix (car candidate))
+           when (string-prefix-p prefix (car candidate)
+                                 company-irony-ignore-case)
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates-async (prefix callback)
@@ -120,6 +125,7 @@
            (company-irony--irony-candidate arg)))
     (post-completion (company-irony--post-completion
                       (company-irony--irony-candidate arg)))
+    (ignore-case company-irony-ignore-case)
     (sorted t)))
 
 ;;;###autoload
