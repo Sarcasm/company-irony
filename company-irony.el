@@ -33,6 +33,7 @@
 (require 'irony-completion)
 
 (require 'company)
+(require 'company-template)
 
 (require 'cl-lib)
 
