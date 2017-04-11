@@ -6,7 +6,7 @@
 ;; Keywords: convenience
 ;; Version: 0.1.2-cvs
 ;; URL: https://github.com/Sarcasm/company-irony/
-;; Package-Requires: ((emacs "24.1") (company "0.8.0") (irony "0.2.0") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "24.1") (company "0.8.0") (irony "0.3.0") (cl-lib "0.5"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,19 +66,13 @@
                                  company-irony-ignore-case)
            collect (propertize (car candidate) 'company-irony candidate)))
 
-(defun company-irony--candidates-async (prefix callback)
-  (funcall callback
-           (company-irony--filter-candidates prefix
-                                             (irony-completion-candidates))))
-
 (defun company-irony--candidates (prefix)
-  (if (irony-completion-candidates-available-p)
-      (company-irony--filter-candidates prefix (irony-completion-candidates))
-    (cons :async
-          (lambda (callback)
-            (irony-completion-candidates-async
-             (lambda () ;; closure, lexically bound
-               (company-irony--candidates-async prefix callback)))))))
+  (cons :async
+        (lambda (callback)
+          (irony-completion-candidates-async
+           (lambda (candidates) ;; closure, lexically bound
+             (funcall callback
+                      (company-irony--filter-candidates prefix candidates)))))))
 
 (defun company-irony--annotation (candidate)
   (concat
