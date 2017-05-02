@@ -62,8 +62,10 @@
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
-           when (string-prefix-p prefix (car candidate)
-                                 company-irony-ignore-case)
+           when (and (string-prefix-p prefix (car candidate)
+                                      company-irony-ignore-case)
+                     (member (irony-completion-accessibility candidate)
+                             irony-completion-accessibility-filter))
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates (prefix)
