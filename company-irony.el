@@ -46,6 +46,13 @@
   "Non-nil to ignore case when collecting completion candidates."
   :type 'boolean)
 
+(defcustom company-irony-prefix-use-stop t
+  "Whether to return `stop' when no prefix is found, e.g. when in the middle of a string.
+
+To let the next backend handle the request when `company-irony' cannot,
+set this value to `nil'."
+  :type 'boolean)
+
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
 
@@ -58,7 +65,8 @@
             (if (irony-completion-at-trigger-point-p)
                 (cons prefix t)
               prefix)))
-      'stop)))
+      (when company-irony-prefix-use-stop
+        'stop))))
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
