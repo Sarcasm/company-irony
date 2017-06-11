@@ -46,27 +46,18 @@
   "Non-nil to ignore case when collecting completion candidates."
   :type 'boolean)
 
-(defcustom company-irony-prefix-use-stop t
-  "Whether to return `stop' when no prefix is found, e.g. when in the middle of a string.
-
-To let the next backend handle the request when `company-irony' cannot,
-set this value to `nil'."
-  :type 'boolean)
-
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
 
 (defun company-irony-prefix ()
   (let ((symbol-start (irony-completion-beginning-of-symbol)))
-    (if symbol-start
-        (let ((prefix (buffer-substring-no-properties symbol-start (point))))
-          (save-excursion
-            (goto-char symbol-start)
-            (if (irony-completion-at-trigger-point-p)
-                (cons prefix t)
-              prefix)))
-      (when company-irony-prefix-use-stop
-        'stop))))
+    (when symbol-start
+      (let ((prefix (buffer-substring-no-properties symbol-start (point))))
+        (save-excursion
+          (goto-char symbol-start)
+          (if (irony-completion-at-trigger-point-p)
+              (cons prefix t)
+            prefix))))))
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
