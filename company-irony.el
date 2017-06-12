@@ -50,14 +50,16 @@
   (get-text-property 0 'company-irony candidate))
 
 (defun company-irony-prefix ()
-  (let ((symbol-start (irony-completion-beginning-of-symbol)))
-    (when symbol-start
-      (let ((prefix (buffer-substring-no-properties symbol-start (point))))
-        (save-excursion
-          (goto-char symbol-start)
-          (if (irony-completion-at-trigger-point-p)
-              (cons prefix t)
-            prefix))))))
+  (pcase-let ((`(,symbol-start . ,symbol-end) (irony-completion-symbol-bounds)))
+    (if (and symbol-end (> symbol-end (point)))
+        'stop
+      (when symbol-start
+        (let ((prefix (buffer-substring-no-properties symbol-start (point))))
+          (save-excursion
+            (goto-char symbol-start)
+            (if (irony-completion-at-trigger-point-p)
+                (cons prefix t)
+              prefix)))))))
 
 (defun company-irony--filter-candidates (prefix candidates)
   (cl-loop for candidate in candidates
