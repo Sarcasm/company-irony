@@ -73,7 +73,8 @@
           (irony-completion-candidates-async
            (lambda (candidates) ;; closure, lexically bound
              (funcall callback
-                      (company-irony--filter-candidates prefix candidates)))))))
+                      (company-irony--filter-candidates prefix candidates)))
+           prefix))))
 
 (defun company-irony--annotation (candidate)
   (concat
