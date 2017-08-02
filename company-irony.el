@@ -61,10 +61,8 @@
                 (cons prefix t)
               prefix)))))))
 
-(defun company-irony--filter-candidates (prefix candidates)
+(defun company-irony--make-candidates (candidates)
   (cl-loop for candidate in candidates
-           when (string-prefix-p prefix (car candidate)
-                                 company-irony-ignore-case)
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--candidates (prefix)
@@ -73,7 +71,7 @@
           (irony-completion-candidates-async
            (lambda (candidates) ;; closure, lexically bound
              (funcall callback
-                      (company-irony--filter-candidates prefix candidates)))
+                      (company-irony--make-candidates candidates)))
            prefix company-irony-ignore-case))))
 
 (defun company-irony--annotation (candidate)
