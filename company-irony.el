@@ -43,8 +43,12 @@
   :group 'irony)
 
 (defcustom company-irony-ignore-case nil
-  "Non-nil to ignore case when collecting completion candidates."
-  :type 'boolean)
+  "If t, ignore case when collecting completion candidates.
+If this value is `smart', ignore case only when there is no
+uppercase letters."
+  :type '(choice (const :tag "off" nil)
+		 (const smart)
+		 (other :tag "on" t)))
 
 (defsubst company-irony--irony-candidate (candidate)
   (get-text-property 0 'company-irony candidate))
