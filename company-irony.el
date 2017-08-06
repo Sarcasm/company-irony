@@ -69,6 +69,12 @@ uppercase letters."
   (cl-loop for candidate in candidates
            collect (propertize (car candidate) 'company-irony candidate)))
 
+(defun company-irony--get-matching-style ()
+  (pcase company-irony-ignore-case
+    ('smart 'smart-case)
+    ('nil 'exact)
+    (other 'case-insensitive)))
+
 (defun company-irony--candidates (prefix)
   (cons :async
         (lambda (callback)
@@ -76,7 +82,8 @@ uppercase letters."
            (lambda (candidates) ;; closure, lexically bound
              (funcall callback
                       (company-irony--make-candidates candidates)))
-           prefix company-irony-ignore-case))))
+           prefix
+           (company-irony--get-matching-style)))))
 
 (defun company-irony--annotation (candidate)
   (concat
