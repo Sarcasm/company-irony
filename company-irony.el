@@ -131,7 +131,8 @@ uppercase letters."
            (company-irony--irony-candidate arg)))
     (post-completion (company-irony--post-completion
                       (company-irony--irony-candidate arg)))
-    (ignore-case company-irony-ignore-case)
+    (ignore-case (eq company-irony-ignore-case t))
+    (no-cache (eq company-irony-ignore-case 'smart))
     (sorted t)))
 
 ;;;###autoload
