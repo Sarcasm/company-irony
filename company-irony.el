@@ -70,10 +70,10 @@ uppercase letters."
            collect (propertize (car candidate) 'company-irony candidate)))
 
 (defun company-irony--get-matching-style ()
-  (pcase company-irony-ignore-case
-    ('smart 'smart-case)
-    ('nil 'exact)
-    (other 'case-insensitive)))
+  (cl-case company-irony-ignore-case
+    (smart 'smart-case)
+    (nil 'exact)
+    (t 'case-insensitive)))
 
 (defun company-irony--candidates (prefix)
   (cons :async
