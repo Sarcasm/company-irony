@@ -72,7 +72,7 @@ uppercase letters."
 (defun company-irony--get-matching-style ()
   (cl-case company-irony-ignore-case
     (smart 'smart-case)
-    (nil 'exact)
+    ((nil) 'exact)
     (t 'case-insensitive)))
 
 (defun company-irony--candidates (prefix)
